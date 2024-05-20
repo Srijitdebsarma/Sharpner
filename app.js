@@ -1,42 +1,45 @@
-const http = require('http');
+const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const querystring = require('querystring');
 
-const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/') {
-    fs.readFile(path.join(__dirname, 'form.html'), (err, content) => {
-      if (err) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
-        return;
-      }
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(content);
-    });
-  } else if (req.method === 'POST' && req.url === '/submit') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      const parsedBody = querystring.parse(body);
-      fs.appendFile('data.txt', `${parsedBody.username}\n`, (err) => {
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+    // Read messages from the file and render the HTML template with the messages
+    fs.readFile(path.join(__dirname, 'messages.txt'), 'utf8', (err, data) => {
         if (err) {
-          res.writeHead(500, { 'Content-Type': 'text/plain' });
-          res.end('Internal Server Error');
-          return;
+            console.error('Error reading file:', err);
+            res.status(500).send('Error reading file.');
+        } else {
+            const messages = data ? data.split('\n') : []; // Split data into an array of messages
+            res.render('index', { messages });
         }
-        res.writeHead(302, { 'Location': '/' });
-        res.end();
-      });
     });
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
-  }
 });
 
-server.listen(3000, () => {
-  console.log('Server running at http://127.0.0.1:3000/');
+app.post('/', (req, res) => {
+    const message = req.body.message;
+    if (!message) {
+        res.status(400).send('No message provided.');
+        return;
+    }
+
+    // Append the new message to the file
+    fs.appendFile(path.join(__dirname, 'messages.txt'), message + '\n', 'utf8', (err) => {
+        if (err) {
+            console.error('Error writing file:', err);
+            res.status(500).send('Error writing file.');
+        } else {
+            // Redirect to the homepage after submitting the message
+            res.redirect('/');
+        }
+    });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
