@@ -17,7 +17,6 @@
     <ul id="messageList"></ul>
 
     <script>
-        // Function to add a new message to the list
         function addMessageToList(message) {
             const messageList = document.getElementById('messageList');
             const listItem = document.createElement('li');
@@ -25,7 +24,7 @@
             messageList.appendChild(listItem);
         }
 
-        // Event listener for form submission
+     
         document.getElementById('messageForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent default form submission
 
@@ -35,7 +34,7 @@
                 addMessageToList(message); // Add the message to the list
                 messageInput.value = ''; // Clear the input field
 
-                // Send the message to the server to store it in the file
+
                 fetch('/', {
                     method: 'POST',
                     headers: {
