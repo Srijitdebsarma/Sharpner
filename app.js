@@ -5,8 +5,8 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));        //Body Parser Middleware
+app.use(express.static('public'));                      //app.use(express.static('public'))
 
 app.get('/', (req, res) => {
     // Read messages from the file and render the HTML template with the messages
