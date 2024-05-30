@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({extended:true}))   //to parse the incoming req bo
 app.use("/add_product", (req, res, next) => {
   console.log("From 2nd Middleware");
   res.send(
-    '<form action="/product" method="POST"><input type="text" placeholder="Add a Product" name="title"><button>Add A Product</button></form>'
+    '<form action="/product" method="POST"><input type="text" placeholder="Add a Product" name="title"><input type="number" placeholder="Add size..." name="size"><button>Add A Product</button></form>'
   ); //it can send the html
   next();
 });
